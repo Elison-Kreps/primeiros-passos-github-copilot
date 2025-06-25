@@ -15,18 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Populate activities list
       Object.entries(activities).forEach(([name, details]) => {
-        const activityCard = document.createElement("div");
-        activityCard.className = "activity-card";
-
-        const spotsLeft = details.max_participants - details.participants.length;
-
-        activityCard.innerHTML = `
-          <h4>${name}</h4>
-          <p>${details.description}</p>
-          <p><strong>Agenda:</strong> ${details.schedule}</p>
-          <p><strong>Disponibilidade:</strong> ${spotsLeft} vagas disponíveis</p>
-        `;
-
+        const activityCard = renderActivityCard(name, details);
         activitiesList.appendChild(activityCard);
 
         // Add option to select dropdown
@@ -39,6 +28,41 @@ document.addEventListener("DOMContentLoaded", () => {
       activitiesList.innerHTML = "<p>Falha ao carregar atividades. Por favor, tente novamente mais tarde.</p>";
       console.error("Erro ao buscar atividades:", error);
     }
+  }
+
+  // Render activity card
+  function renderActivityCard(name, details) {
+    const card = document.createElement("div");
+    card.className = "activity-card";
+
+    const spotsLeft = details.max_participants - details.participants.length;
+
+    card.innerHTML = `
+      <h4>${name}</h4>
+      <p>${details.description}</p>
+      <p><strong>Agenda:</strong> ${details.schedule}</p>
+      <p><strong>Disponibilidade:</strong> ${spotsLeft} vagas disponíveis</p>
+    `;
+
+    // Seção de participantes
+    if (details.participants && details.participants.length > 0) {
+      const participantsSection = document.createElement("div");
+      participantsSection.className = "participants-section";
+      const title = document.createElement("h4");
+      title.textContent = "Participantes";
+      participantsSection.appendChild(title);
+      const list = document.createElement("ul");
+      list.className = "participants-list";
+      details.participants.forEach((participant) => {
+        const item = document.createElement("li");
+        item.textContent = participant;
+        list.appendChild(item);
+      });
+      participantsSection.appendChild(list);
+      card.appendChild(participantsSection);
+    }
+
+    return card;
   }
 
   // Handle form submission
